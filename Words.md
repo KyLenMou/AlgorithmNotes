@@ -58,6 +58,8 @@ repository 仓库
 
 ## S
 
+subsegment 分段
+
 ## T
 
 ## U
