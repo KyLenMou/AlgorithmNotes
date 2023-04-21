@@ -158,11 +158,11 @@ ll merge_sort(int l, int r)
 
 对于合并集合操作，比如把a所属的集合和b所属的集合合并时，只需让p[b] = a，根据p的定义来说，即让b的父节点指向a。当我们要查询b是否属于a时，只需要看p[b]是否等于a就行了。当然，我们要看a是否属于a这个集合时，看p[a]是否等于a就行。
 
-<img src="AlgorithmNotes.assets/image-20230421165433143.png" alt="image-20230421165433143" style="zoom: 67%;" />
+<img src="AlgorithmNotes.assets/image-20230421185625372.png" alt="image-20230421185625372" style="zoom:67%;" />
 
 但是，我们新建一个c，当我们把a所属的集合和c所属的集合按这个方法合并后：
 
-<img src="AlgorithmNotes.assets/image-20230421165742126.png" alt="image-20230421165742126" style="zoom:67%;" />
+<img src="AlgorithmNotes.assets/image-20230421185638449.png" alt="image-20230421185638449" style="zoom:67%;" />
 
 
 
@@ -175,7 +175,7 @@ ll merge_sort(int l, int r)
 
 但是，我们新建d和e，当我们把d和e合并，再把e所属的集合和c所属的集合仍按这个方法合并后：
 
-<img src="AlgorithmNotes.assets/image-20230421171022159.png" alt="image-20230421171022159" style="zoom:67%;" />
+<img src="AlgorithmNotes.assets/image-20230421185655260.png" alt="image-20230421185655260" style="zoom:67%;" />
 
 此时：
 
@@ -188,12 +188,12 @@ ll merge_sort(int l, int r)
 
 1. 我们依次合并1和2,2和3,……,x-1和x，会变成这样的情况：
 
-   <img src="AlgorithmNotes.assets/image-20230421164459327.png" alt="image-20230421164459327" style="zoom:67%;" />
+   ![image-20230421185709460](AlgorithmNotes.assets/image-20230421185709460.png)
 
    我们合并完后，他们确实是在同一个集合，但是我们要查询x是否属于1这个集合时，要循环向上遍历x的父节点直到找到1为止 
 
 2. 当我们要查询x和2x是否在同一个集合里时，要查询x和2x的根节点是否一样，要循环向上遍历x和2x的父节点，然后判断两者的父节点是否相同
-   <img src="AlgorithmNotes.assets/image-20230421171736820.png" alt="image-20230421171736820"  />
+   ![image-20230421185718746](AlgorithmNotes.assets/image-20230421185718746.png)
 
    但是当数据量非常大时，这样查询的时间复杂度是相当大的
 
