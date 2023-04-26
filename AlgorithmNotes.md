@@ -645,7 +645,27 @@ bool spfa() //返回是否存在负环
 
 
 
-#### 关于spfa和dijkstra
+### Floyd
+
+##### 算法思路
+
+使用邻接矩阵，基于动态规划，具体原理见动态规划
+
+##### 参考代码
+
+```c++
+int d[N][N]; //邻接矩阵 
+int n; //代表有几个点
+void floyd()
+{
+    for(int k = 1; k <= n; k++)
+        for(int i = 1; i <= n; i++)
+            for(int j = 1; j <= n; j++)
+                d[i][j] = min(d[i][j], d[i][k] + d[k][j]);
+}
+```
+
+
 
 ---
 
