@@ -28,6 +28,11 @@ for(int i = 0; i <= n + 2; i++) cout << p[i] << ' ';
 
 输出：`0 6 6 6 6 0 0 0`
 
+与memset相比：
+
+1. 可以赋任何值，而memset只能赋0，-1，0x3f
+2. 但是比memset慢
+
 ## 基础算法(BasicAlgorithm)
 
 ### 快速排序(QuickSort)
@@ -253,7 +258,7 @@ bool query(int a, int b)
 
 我们开一个cnt数组用来记录每个集合的元素数量。显然，一开始每个集合都有一个元素，所以cnt的所有值为1。
 
-假设一开始，我们有a和b两个集合，他们都只有他们本身一个元素。现在使用合并操作`p[find(b)] = find(a)`把他们合并：
+假设一开始，我们有a和b两个集合，他们都只有他们本身一个元素。现在使用合并操作p[find(b)] = find(a)把他们合并：
 
 1. a和b现在属于同一个集合
 2. a和b这一个集合的元素数量为2
@@ -305,7 +310,7 @@ p[find(b)] = find(a);
    3. 当j遍历完s时匹配成功
 3. 求next数组：跟匹配的原理一样，用s来匹配s，i指针要从下标2开始，因为下标1的next值为0，一个字符不能组成公共前后缀。 每次遍历时next[i]的值即为j的位置
    ![image-20230324164508942](AlgorithmNotes.assets/image-20230324164508942.png)
-4. 具体原理请见[B站视频](https://www.bilibili.com/video/BV1AY4y157yL)和[y总讲解](https://www.acwing.com/video/259/)，本人目前无法讲述得很清楚
+4. 具体原理请见[B站视频](https://www.bilibili.com/video/BV1AY4y157yL)和[y总讲解](https://www.acwing.com/video/259/)
 
 #### 参考代码
 
@@ -351,7 +356,7 @@ void kmp() //匹配
 
 #### 算法思路
 
-1. （单源最短路，找的是一个点到其他点的最短距离，接下来都以1为起点。）创建一个dist数组，用来存1到各个点的最短距离（初始状态全为无穷大，即1到所有点的距离为无穷大）；创建一个bool类型的st数组，用来判断一个点是否已确定1到该点的最短距离（初始状态全为false，即都没有确定最短距离）。当然需要一个存各个点之间的距离的空间，稠密图用邻接矩阵，稀疏图用邻接表
+1. （单源最短路，找的是一个点到其他点的最短距离，接下来都以1为起点。）创建一个dist数组，用来存1到各个点最短路径的距离（初始状态全为无穷大，即1到所有点的距离为无穷大）；创建一个bool类型的st数组，用来判断一个点是否已确定1到该点的最短距离（初始状态全为false，即都没有确定最短距离）。当然需要一个存各个点之间的距离的空间，稠密图用邻接矩阵，稀疏图用邻接表
 2. 算法步骤主要是一个循环：
    1. 找出未标记的距离最短的点
    2. 标记距离最短的点
@@ -479,8 +484,9 @@ int dijkstra(int l, int r) //返回l到r的最短距离
 
 ![image-20230419220304794](AlgorithmNotes.assets/image-20230419220304794.png)
 
+#### 参考代码
 ```c++
-const int M = 510, N = 1e5 = 10;
+const int M = 510, N = 1e5 + 10;
 
 struct edge	
 {
@@ -504,7 +510,7 @@ int bellman_ford(int l, int r)
             int a = e[j].a, b = e[j].b, w = e[j].w;
             dist[b] = min(dist[b],temp[a] + w);
         }
-    }
+    }	
     return dist[r];
     //在判断能否到达时，要判断dist[r] > 0x3f3f3f3f / 2 而不是 dist[r] == 0x3f3f3f3f
     //因为在每次松弛时，每个点的距离虽然被减小了或者增加了，但是它的距离的本质还应该是无穷，但是已经不是0x3f3f3f3f了
@@ -514,7 +520,132 @@ int bellman_ford(int l, int r)
 
 
 
+### spfa
 
+#### 算法思路
+
+spfa是由bellman-ford算法优化而来的，对于bellman-ford而言，每次都要把所有的边都松弛，其中一些边是没有必要松弛的，会浪费时间。spfa对此做了优化：
+
+1. 从起点开始更新，把和起点相邻的点放入队列中，并更新距离
+2. 使用bfs，用队列中每个点来更新该点的相邻点的距离
+3. 在bfs时，已经在队列中的点无需入列
+4. 当队列为空时，spfa结束
+
+#### 参考代码
+
+spfa和dijkstra的堆优化版本使用的数据结构是一样的，即都是用邻接表来存储
+
+```c++
+int dist[N];
+bool st[N];
+int spfa(int l, int r)
+{
+    memset(dist,0x3f,sizeof dist);
+    dist[l] = 0;
+    queue<int> q;
+    q.push(l);
+    st[l] = true;
+    
+    while(q.size())
+    {
+   		int t = q.front();
+        q.pop();
+        //出队并标记 
+        st[t] = false;
+        for(int i = h[t]; i != -1; i = ne[i])
+        {
+            int j = e[i];
+            if(dist[j] > dist[t] + w[i])
+            {
+                dist[j] = dist[t] + w[i];
+                //如果不在队列中才加入
+                if(!st[j])
+                {
+                    q.push(j);
+                    //已加入，标记入队
+                    st[j] = true;
+                }
+            }
+        }
+    }
+    
+    return dist[r]; 
+    //与bellman-ford算法不一样，仍然是判断是否等于0x3f3f3f3f
+    //因为spfa把所有点的距离都更新了，如果不能到r点的话dist[r]必为0x3f3f3f3f
+}
+```
+
+#### 图解
+
+![image-20230425180528928](AlgorithmNotes.assets/image-20230425180528928.png)
+![image-20230425180621592](AlgorithmNotes.assets/image-20230425180621592.png)
+
+#### 应用：spfa判断负环
+
+##### 思路
+
+使用cnt数组来记录某个点到每个点的最长路径长度。一开始把所有的点都加入到队列中，然后开始使用spfa算法，在取出队头元素后，他的相邻点的cnt值等于队头元素的cnt值+1，因为要多走一条边。
+
+<img src="AlgorithmNotes.assets/image-20230426192419077.png" alt="image-20230426192419077" style="zoom:80%;" />
+
+如果存在一个负权边，如下图
+
+<img src="AlgorithmNotes.assets/image-20230426192635412.png" alt="image-20230426192635412" style="zoom: 80%;" />
+
+我们在spfa时，会把队头b取出，然后你会发现dist[b] > dist[b] + w[i]，即再绕一圈这个负环后距离会更小，接着你又把b加入进队列，cnt[b]++。
+
+然后你就会如此往复，cnt会变得无穷大，很显然这就存在一个负环了。但是我们肯定不能判断是否是无穷大，这样会TLE。所以我们根据抽屉原理：就拿上图举例，一共有三个点，如果没有负环应该只有两条边，但是现在有三条边，两条边要放到非负环的抽屉里，还剩下一个负环的边放不进抽屉里；如果有n个点，在没有负环的情况下cnt最大值为n-1，一旦cnt出现了n，那么必定存在负环。
+
+##### 参考代码
+
+我们只需要在更新距离时，更新cnt，一旦发现cnt大于等于n，那么就存在负环，可以直接结束函数
+
+我们无需判断一个点是否能到达另一个点，所以dist数组为初始状态0就够了 
+
+```c++
+int n,m;
+int dist[N];
+int cnt[N];
+bool st[N];
+
+bool spfa() //返回是否存在负环
+{ 
+    queue<int> q;
+    for(int i = 1; i <= n; i++) 
+    {
+        q.push(i);
+        st[i] = true;
+    }
+  	
+    while(q.size())
+    {
+        int t = q.front();
+        q.pop();
+        st[t] = false;
+        
+        for(int i = h[t]; i != -1; i = ne[i])
+        {
+            int j = e[i];
+            if(dist[j] > dist[t] + w[i])
+            {
+                dist[j] = dist[t] + w[i];
+                cnt[j] = cnt[t] + 1;
+                if(cnt[j] >= n) return true; //不能写==
+                if(!st[j])
+                {
+                    q.push(j);
+                    st[j] = true;
+                }
+            }
+        }
+    }
+    return false;
+}
+```
+
+
+
+#### 关于spfa和dijkstra
 
 ---
 
