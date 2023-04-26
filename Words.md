@@ -6,13 +6,19 @@ attribute 属性
 
 ## B
 
-### C
+## C
+
+column 列
+
+> row 行
 
 coordinates 坐标，协调
 
 concentric 同心的
 
 ## D
+
+diagonal 对角线
 
 ## E
 
@@ -55,6 +61,10 @@ request 请求，要求
 response 响应，答复
 
 repository 仓库
+
+row 行
+
+> column 列
 
 ## S
 
