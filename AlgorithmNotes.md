@@ -15,6 +15,8 @@ for(int i = 0; i <= n + 2; i++) cout << p[i] << ' ';
 
 输出：`0 1 2 3 4 5 0 0`
 
+
+
 ### fill函数
 
 ```c++
@@ -32,6 +34,46 @@ for(int i = 0; i <= n + 2; i++) cout << p[i] << ' ';
 
 1. 可以赋任何值，而memset只能赋0，-1，0x3f
 2. 但是比memset慢
+
+
+
+### find函数
+
+```c++
+string s = "abcabc";
+string s1 = "I'm s1.";
+cout << s.find("cab") << endl;
+if(s.find("cab") == string::npos) cout << "cannot find \"cab\"" << endl;
+else cout << "find \"cab\"" << endl;
+if(s.find("cab") == s.npos) cout << "cannot find \"cab\"" << endl;
+else cout << "find \"cab\"" << endl;
+if(s.find("cab") == s1.npos) cout << "cannot find \"cab\"" << endl;
+else cout << "find \"cab\"" << endl;
+if(s.find("ccc") == string::npos) cout << "cannot find \"cab\"" << endl;
+else cout << "find \"cab\"" << endl;
+if(s.find("ccc") == s.npos) cout << "cannot find \"cab\"" << endl;
+else cout << "find \"cab\"" << endl;
+if(s.find("ccc") == s1.npos) cout << "cannot find \"cab\"" << endl;
+else cout << "find \"cab\"" << endl;
+```
+
+输出：
+
+```markdown
+2
+find "cab"
+find "cab"
+find "cab"
+cannot find "cab"
+cannot find "cab"
+cannot find "cab"
+```
+
+1. find函数返回字符串中从左往右第一个出现参数字符串的下标
+2. 当find函数找不到参数字符串时会返回string::npos
+3. 任意字符串加上`.npos`等价于string::npos
+
+
 
 ## 基础算法(BasicAlgorithm)
 
@@ -366,7 +408,7 @@ void dfs(int x) //参数，根据题目含义赋予意义
 }
 ```
 
-#### 应用（排列数字） 
+#### 应用：排列数字
 
 ```c++
 int path[N]; //记录数字
@@ -381,7 +423,7 @@ void dfs(int u) //表示搜索到了第u个数字
         cout << endl;
         return;
     }
-    for(int i = 1; i <= n; i++) //
+    for(int i = 1; i <= n; i++) //枚举每个数字
     {
 		if(st[i]) continue; //如果数字被用过了就跳过
         st[i] = true; //否则就用这个数字并且标记被用过了
@@ -405,7 +447,7 @@ void dfs(int u) //表示搜索到了第u个数字
 
 直到队列为空，此时已经遍历完所有的元素，可以求得一个最短的属性
 
-#### 参考代码
+#### 参考模板
 
 ```c++
 void bfs()
@@ -415,7 +457,7 @@ void bfs()
     
     while(q.size()) //只要队列不空就一直搜索直到队列为空
     {
-        int t = q.top(); //取出对头
+        int t = q.front(); //取出对头
         q.pop;
         
         //这边写：
@@ -425,6 +467,38 @@ void bfs()
     }
 }
 ```
+
+#### 应用：排列数字
+
+ ```c++
+ int n; //排列数字的数量
+ 
+ void bfs()
+ {
+ 	queue<string> q; 
+     q.push(""); //加入起点，一开始字符串为空
+     
+     while(q.size())
+     {
+         string t = q.front();
+         q.pop();
+         
+         if(t.size() == n) //出现了全排列就输出，并且不用继续往后搜索
+         {
+ 			cout << t << endl;
+             continue;
+         }
+         
+         for(int i = 1; i <= n; i++) //枚举每个数字
+         {
+             if(t.find(i + '0') != t.npos) continue; //如果出现了已经出现过的数字，那就跳过
+             string temp = t;
+             temp.push_back(i + '0'); 
+             q.push(temp); //新添没有加入过的数字，并加入到队列中
+         }
+     }
+ }
+ ```
 
 
 
