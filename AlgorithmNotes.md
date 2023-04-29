@@ -394,6 +394,8 @@ void kmp() //匹配
 
 #### 参考模板
 
+##### 常规搜索 
+
 ```c++
 void dfs(int x) //参数，根据题目含义赋予意义
 {
@@ -407,6 +409,38 @@ void dfs(int x) //参数，根据题目含义赋予意义
     st[a] = false; //回溯状态
 }
 ```
+
+##### 图论搜索
+
+```c++
+const int N = 1e5 + 10, M = N * 2; //这里例举树的dfs，采用无向图
+
+void add(int a, int b) //无向图的只需要建两条边即可
+{
+    e[idx] = b;
+    ne[idx] = h[a];
+    h[a] = idx++;
+    swap(a,b);
+    e[idx] = b;
+    ne[idx] = h[a];
+    h[a] = idx++;
+}
+
+boot st[N]; //记录是否已经被遍历过
+
+void dfs(int u)	
+{
+    st[u] = true; //标记被遍历过了
+    for(int i = h[u]; i != -1; i = ne[i])
+    {
+        int j = e[i];
+        if(st[j]) continue;
+        dfs(j);
+    }
+}
+```
+
+
 
 #### 应用：排列数字
 
@@ -449,6 +483,8 @@ void dfs(int u) //表示搜索到了第u个数字
 
 #### 参考模板
 
+##### 常规搜索
+
 ```c++
 void bfs()
 {
@@ -464,6 +500,30 @@ void bfs()
 		//用t这个队头来获得新元素的代码的具体逻辑
         //最后把新元素加入队列
         
+    }
+}
+```
+
+##### 图论搜索
+
+```c++
+void bfs(int u) //以u为起点bfs
+{
+    queue<int> q;
+    q.push(u);
+    st[u] = true;
+    while(q.size())
+    {
+		auto t = q.front();
+        q.pop();
+        cout << t << ' ';
+        for(int i = h[t]; i != -1; i = ne[i])
+        {
+            int j = e[i];
+            if(st[j]) continue;
+            st[j] = true;
+            q.push(j);
+        }
     }
 }
 ```
@@ -594,7 +654,7 @@ int dijkstra(int l, int r) //返回l到r的最短距离
     dist[l] = 0; //添加l
     heap.push({0,1}); //把l加入到小根堆中，l到l的距离为0
     
-    while(heap.size())
+    while(heap.size())	
     {
         //t.x表示1号点到t.y的距离 t.y表示点的编号
         auto t = heap.top();
@@ -705,7 +765,7 @@ int spfa(int l, int r)
    		int t = q.front();
         q.pop();
         //出队并标记 
-        st[t] = false;
+        st[t] = false;	
         for(int i = h[t]; i != -1; i = ne[i])
         {
             int j = e[i];
