@@ -16,6 +16,8 @@ coordinates 坐标，协调
 
 concentric 同心的
 
+consecutive 连续的
+
 ## D
 
 diagonal 对角线

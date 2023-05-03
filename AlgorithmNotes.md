@@ -2,6 +2,8 @@
 
 ## 杂项（Tips）
 
+### 结构体+自定义排序
+
 ### iota函数 
 
 ```c++
@@ -43,16 +45,22 @@ for(int i = 0; i <= n + 2; i++) cout << p[i] << ' ';
 string s = "abcabc";
 string s1 = "I'm s1.";
 cout << s.find("cab") << endl;
+
 if(s.find("cab") == string::npos) cout << "cannot find \"cab\"" << endl;
 else cout << "find \"cab\"" << endl;
+
 if(s.find("cab") == s.npos) cout << "cannot find \"cab\"" << endl;
 else cout << "find \"cab\"" << endl;
+
 if(s.find("cab") == s1.npos) cout << "cannot find \"cab\"" << endl;
 else cout << "find \"cab\"" << endl;
+
 if(s.find("ccc") == string::npos) cout << "cannot find \"cab\"" << endl;
 else cout << "find \"cab\"" << endl;
+
 if(s.find("ccc") == s.npos) cout << "cannot find \"cab\"" << endl;
 else cout << "find \"cab\"" << endl;
+
 if(s.find("ccc") == s1.npos) cout << "cannot find \"cab\"" << endl;
 else cout << "find \"cab\"" << endl;
 ```
@@ -798,6 +806,8 @@ int spfa(int l, int r)
 
 ##### 思路
 
+基于：抽屉原理
+
 使用cnt数组来记录某个点到每个点的最长路径长度。一开始把所有的点都加入到队列中，然后开始使用spfa算法，在取出队头元素后，他的相邻点的cnt值等于队头元素的cnt值+1，因为要多走一条边。
 
 <img src="AlgorithmNotes.assets/image-20230426192419077.png" alt="image-20230426192419077" style="zoom:80%;" />
@@ -944,10 +954,9 @@ int Prim() //返回最小生成树的总边权重,不存在返回-1
     //    //3.用这个点更新未标记的点到已经确认的最小生成树的最短距离
     //    for(int j = 1; j <= n; j++)
     //    {
-    
-            dist[j] = min(dist[j],g[t][j]); //这里是点到树（一个集合），而不是起点到点
-            //该处dijkstra是取min(dist[j],dist[t] + g[t][j])，因为dist的意义不同
-    
+    		if(!st[j] && dist[j] > g[t][j])
+                dist[j] = g[t][j]; //这里是点到树（一个集合），而不是起点到点
+                //该处dijkstra是取min(dist[j],dist[t] + g[t][j])，因为dist的意义不同
     //    }
     //}
     
@@ -958,6 +967,170 @@ int Prim() //返回最小生成树的总边权重,不存在返回-1
 
 
 ### Kruskal
+
+#### 算法思路
+
+把所有的边按权重大小升序排序，接着枚举所有的边，然后我们对所有的点使用并查集：
+
+1. 对于每一个a和b之间的边，权重为w。
+
+2. 如果a和b不在同一集合： 
+   1. 合并a和b
+   2. a和b之间的边变为最小生成树的一个路径
+   3. 最小生成树的总权重加w
+3. 使用一个cnt记录一共合并了几次，若一共有n个点，cnt应该为n-1次，即n-1条边，否则不存在最小生成树，因为有一个孤立点
+
+最后所有点都合并成了一个集合，与所有每次合并时的边组成了最小生成树，搭配下面的图解更易于理解
+
+#### 参考代码
+
+```c++
+struct E //存边
+{
+    int a,b,w;
+} e[N];
+
+bool cmp(E e1, E e2) //自定义排序，按权重大小升序排序
+{
+    return e1.w < e2.w;
+}
+
+int Kruskal()
+{
+    int res = 0; //总权重
+    int cnt = 0; //记录合并了几次，即一共几条边
+    for(int i = 1; i <= m; i++)
+    {
+        int a = e[i].a, b = e[i].b, w = e[i].w;
+        a = find(a), b = find(b);
+        if(a != b)
+        {
+            p[a] = b; //合并
+            res += w; //加给总权重
+            cnt++; //加一条边
+        }
+    }
+    if(cnt < n - 1) return -1; //边少于n-1则不能构成最小生成树
+    else return res;
+}
+```
+
+#### 图解
+
+![image-20230503165503392](AlgorithmNotes.assets/image-20230503165503392.png)
+
+
+
+## 二分图
+
+### 染色法判定二分图
+
+#### 算法思路
+
+基于理论：”一个图是二分图“是“图中不含奇数环”的充要条件
+
+<img src="AlgorithmNotes.assets/image-20230503221906450.png" alt="image-20230503221906450" style="zoom:33%;" />
+
+我们使用dfs来实现，我们定义一个color数组，0表示未染色，1表示一种颜色，2表示另一种颜色
+
+我们在dfs时：
+
+1. 该点未染色，染一种颜色，继续往下dfs
+2. 该点染了一种颜色，遍历邻点，如果邻点：
+   1. 未染色，染另一种颜色，继续dfs
+   2. 染了同种颜色，不满足题意，不是二分图
+   3. 染了另一种颜色，目前满足题意，可能为二分图
+
+在染不同色时，比如现在为1，要染成2，只需用3减去1，现在为2同理，用3减去2
+
+不能只dfs一次，如果我们有两个子图，只能遍历完一个子图，即只能判断一个子图是否是二分图
+
+<img src="AlgorithmNotes.assets/image-20230503222020129.png" alt="image-20230503222020129" style="zoom:33%;" />
+
+#### 参考代码
+
+```c++
+int color[N];
+bool flag = true;
+void dfs(int u, int c) //把u号点颜色染为c
+{
+	color[u] = c;
+    for(int i = h[u]; i != -1; i = ne[i])
+    {
+		int j = e[i];
+        //在染不同色时，比如现在为1，要染成2，只需用3减去1，现在为2同理，用3减去2
+        if(color[j] == 0) dfs(j,3 - c); //1.未染色，染另一种颜色，继续dfs
+        else if(color[j] == c) flag = false; //2.染了同种颜色，不满足题意，不是二分图
+        else if(color[j] == 3 - c) continue; //3.染了另一种颜色，目前满足题意，可能为二分图
+    }
+}
+int main()
+{
+	//...
+    for(int i = 1; i <= n; i++)
+    {
+        //不能只dfs一次，如果我们有两个子图，只能遍历完一个子图，即只能判断一个子图是否是二分图
+        if(!color[i]) dfs(i,1);
+    }
+    if(flag) cout << "Yes" << endl;
+    else cout << "No" << endl; 
+}
+```
+
+​	
+
+### 二分图的最大匹配
+
+#### 算法思路
+
+一个图分成左子图和右子图，现要找该二分图的最大匹配数，我们定义match数组为右子图的点匹配的左子图的哪个点
+
+我们遍历左子图，每次遍历左子图的一个点a时： 
+
+1. 遍历a在右子图的所有点
+2. 遍历到了点b，如果b没有被遍历过：
+   1. 如果b没有被匹配过，则b匹配a
+   2. 如果b被匹配过，我们在左子图找匹配b的点c，给c重新在右子图匹配一个
+   3. 匹配数量加一
+
+```c++
+int match[N]; //初始为0，表示还没有匹配
+bool st[N]; //临时预定数组，st[b]=a表示一轮模拟匹配中，右子图的b被左子图的a匹配了。
+
+bool find(int u)
+{
+    for(int i = h[u]; i != -1; i = ne[i]) //遍历u在右子图的所有点
+    {
+		int j = e[i];
+        if(!st[j]) //遍历到了点j，如果j没有被遍历过
+        {
+            st[j] = true; //标记已遍历
+            //1. 如果j没有被匹配过，则j匹配u
+			//2. 如果j被匹配过，我们在左子图找匹配j的点c，给c重新在右子图匹配一个
+            if(!match[j] || find(match[j]))
+            {
+                match[j] = u;
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
+int main()
+{
+    //...
+    int res = 0; //最大匹配数
+    for(int i = 1; i <= n1; i++) //遍历左子图，一共n1个点
+    {
+        memset(st,false,sizeof st); //因为每次模拟匹配的预定情况都是不一样的所以每轮模拟都要初始化
+        if(find(i)) res++; //匹配数量加一
+    }
+    cout << res;
+}
+```
+
+
 
 ---
 
