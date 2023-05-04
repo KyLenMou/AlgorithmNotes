@@ -660,7 +660,7 @@ int dijkstra(int l, int r) //返回l到r的最短距离
 {
     memset(dist,0x3f,sizeof dist);
     dist[l] = 0; //添加l
-    heap.push({0,1}); //把l加入到小根堆中，l到l的距离为0
+    heap.push({0,l}); //把l加入到小根堆中，l到l的距离为0
     
     while(heap.size())	
     {
@@ -909,6 +909,8 @@ void floyd()
 2. 标记距离最短的点
 3. 用这个点更新未标记的点到已经确认的最小生成树的最短距离
 
+同样，对于堆优化版也可以相应地修改
+
 #### 注意事项（孤立点问题）
 
 在dijkstra中，如果最后一个点的dist距离为无穷，那么说明无法到达该点。
@@ -924,45 +926,100 @@ int g[N][N]; //邻接矩阵，存边
 int dist[N]; //存每个点到已确定的最小生成树的最短距离
 bool st[N]; //每个点是否已经加入到最小生成树中
 
-int Prim() //返回最小生成树的总边权重,不存在返回-1
+int Prim() //输出最小生成树的总边权重,不存在输出impossible
 {
-    //注释部分为与dijkstra相同处
-    //memset(dist,0x3f,sizeof dist);
+    memset(dist,0x3f,sizeof dist);
     
     dist[1] = 0; //一开始把任意一个点加入到树中
     int res = 0; //总边权重
     
-    //for(int i = 1; i <= n; i++)	//一共操作n次，基于贪心
-    //{
-    //    int t = -1;
-    //    //1.找出未标记的距离最短的点
-    //    for(int j = 1; j <= n; j++)
-    //    {
-    //        if(!st[j] && (t == -1 || dist[j] < dist[t]))
-    //        {
-    //            t = j;
-    //        }
-    //    }
-    //    //2.标记距离最短的点
-    //   st[t] = true;
+    for(int i = 1; i <= n; i++)	//一共操作n次，基于贪心
+    {
+        int t = -1;
+        //1.找出未标记的距离最短的点
+        for(int j = 1; j <= n; j++)
+        {
+            if(!st[j] && (t == -1 || dist[j] < dist[t]))
+            {
+                t = j;
+            }
+        }
+        //2.标记距离最短的点
+        st[t] = true;
     
         //t加入到了树中，把权重累加到res上
         res += dist[t];
         //孤立点问题
-        if(dist[t] == 0x3f3f3f3f) return -1;
+        if(dist[t] == 0x3f3f3f3f) 
+        {
+            cout << "impossible";
+            return; 
+        }
     
-    //    //3.用这个点更新未标记的点到已经确认的最小生成树的最短距离
-    //    for(int j = 1; j <= n; j++)
-    //    {
+        //3.用这个点更新未标记的点到已经确认的最小生成树的最短距离
+        for(int j = 1; j <= n; j++)
+        {
     		if(!st[j] && dist[j] > g[t][j])
                 dist[j] = g[t][j]; //这里是点到树（一个集合），而不是起点到点
                 //该处dijkstra是取min(dist[j],dist[t] + g[t][j])，因为dist的意义不同
-    //    }
-    //}
+        }
+    }
     
     return res;
 }
 ```
+
+同样，堆优化版只需要改一改就行了
+
+```c++
+#define x first
+#define y second
+typedef pair<int,int> PII;
+int h[N],e[N],w[N],ne[N],idx = 0; 
+int dist[N];
+int n,m;
+bool st[N];
+priority_queue<PII,vector<PII>,greater<PII>> heap; 
+
+void Prim() //输出最小生成树的总边权重,不存在输出impossible
+{
+    memset(dist,0x3f,sizeof dist);
+    dist[1] = 0;
+    heap.push({0,1}); 
+    int res = 0;
+    while(heap.size())	
+    {
+        //t.x表示t.y号点到已知的最小生成树的距离 t.y表示点的编号
+       	//1.找出未标记的距离最短的点
+        auto t = heap.top();
+        heap.pop();
+        //2.标记距离最短的点
+        if(st[t.y]) continue;
+        st[t.y] = true;
+        //3.用这个点更新未标记的点到已经确认的最小生成树的最短距离
+        for(int i = h[t.y]; i != -1; i = ne[i])
+        {
+            int j = e[i]; 
+            if(dist[j] > w[i])
+            {
+                dist[j] = w[i];
+                heap.push({dist[j],j});
+            }	
+        }
+    }
+    for(int i = 1; i <= n; i++) //如果有一个点没有被遍历到，说明他是一个孤立点，不存在最小生成树
+    {
+        if(!st[i])
+        {
+            cout << "impossible";
+            return;
+        }
+    }
+    cout << res; //存在，返回最小生成树的总权重 
+}
+```
+
+
 
 
 
