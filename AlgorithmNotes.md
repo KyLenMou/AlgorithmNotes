@@ -1239,6 +1239,65 @@ void divide(int n) //输出n的质因数和该质因数的数量
 
 
 
+### 筛质数
+
+#### 算法思路
+
+##### 埃式筛法
+
+从第一个质数开始枚举，每次枚举都把该质数的倍数给标记一下，被标记的数不可能是质数，之后继续枚举没有被标记的数。最后没有被标记的数就是质数
+
+![image-20230505215415068](AlgorithmNotes.assets/image-20230505215415068.png)
+
+##### 线性筛法
+
+从第一个数开始枚举， 同上，判断该数没有被标记，没有则是质数。接着，枚举小于该数的所有质数，枚举到该数的最小质因数时停止枚举，继续枚举下一个数。这样做可以防止枚举相同的合数。详情参考[AcWing 868. 线性筛法的简单举例分析与证明 - AcWing](https://www.acwing.com/solution/content/100707/)
+
+#### 参考代码
+
+##### 埃式筛法
+
+```c++
+bool st[N];
+vector<int> get_primes(int n)
+{
+   	vector<int> res;
+    for(int i = 2; i <= n; i++)
+    {
+        if(!st[i])
+        {
+            res.push_back(i);
+            for(int j = i + i; j <= n; j += i) st[j] = true; //枚举倍数
+        }
+    }
+    return res;
+}
+```
+
+##### 线性筛法
+
+```c++
+bool st[N];
+vector<int> get_primes(int n)
+{
+   	vector<int> primes;
+    for(int i = 2; i <= n; i++)
+    {
+        if(!st[i]) primes.push_back(i);
+		for(int j = 0; primes[j] <= n / i; j++)
+		{
+		    st[primes[j] * i] = true;
+		    if(i % primes[j] == 0) break;
+		}
+    }
+    return primes;
+}
+```
+
+
+
+
+
 ---
 
 ***Made By KyLen***
