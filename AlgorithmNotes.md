@@ -1229,6 +1229,8 @@ bool isPrime(int n) //返回是否是质数
 
 #### 算法思路
 
+原理：每个正整数都能够以唯一的方式表示成它的质因数的乘积
+
 从最小的质数2开始往后枚举，每次枚举只要能被n整除，就把n除到不能除为止，除了几次这个除数就被分解了几次，接着往后枚举。可以保证能被n整除的只有质数。同样，和判断质数的算法一样，我们只需要枚举到$\sqrt{n}$就行了，并且保证在$\sqrt{n}$之后最多只有一个质因数，如果有两个的话，他们的乘积大于n，就不对了
 
 #### 参考代码
@@ -1311,6 +1313,69 @@ vector<int> get_primes(int n)
 ```
 
 
+
+## 求约数
+
+### 算法思路
+
+和判断质数的优化一样，只需要枚举1到$\sqrt{n}$就行了。注意$\sqrt{n}$是约数时只算一个
+
+### 参考代码
+
+```c++
+vector<int> get_divisors(int n) //获取n的所有约数
+{
+    vector<int> res;
+    for(int i = 1; i <= n / i; i++)
+    {
+        if(n % i == 0)
+        {
+            res.push_back(i);
+            if(i != n / i) res.push_back(n / i);
+        }
+    }
+    sort(res.begin(), res.end());
+    return res;
+}
+```
+
+
+
+## 求约数个数
+
+### 算法思路
+
+原理：一个数的约数是由这个数的几个质因子相乘得到的
+
+由n个数的乘积组成一个数的约数个数，可以统计这n个数的总质因子的数量来求得这个数的约数个数。详情见[AcWing 870. 约数个数](https://www.acwing.com/solution/content/148964/)
+
+### 参考代码
+
+```c++
+unordered_map<int,int> m;
+void get(int n)
+{
+    for(int i = 2; i <= n / i; i++)
+    {
+        if(n % i == 0)
+        {
+            while(n % i == 0)
+            {
+                m[i]++;
+                n /= i;
+            }
+        }
+    }
+    if(n > 1) m[n]++;
+}
+
+int main()
+{
+    //把这n个数的质因子都通过get函数加起来，然后通过map求和
+    int res = 1;
+    for(auto [x,y] : m) res *= y + 1;
+}
+```
 
 
 
