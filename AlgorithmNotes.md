@@ -4,6 +4,18 @@
 
 ### 结构体+自定义排序
 
+```c++
+struct E
+{
+    int a,b,c;
+} e[N];
+
+bool cmp(E e1, E e2) //按b的大小升序排序 b1 < b2 < ... < bn
+{
+    return e1.b < e2.b;
+}
+```
+
 ### iota函数 
 
 ```c++
@@ -403,7 +415,7 @@ void kmp() //匹配
 void dfs(int x) //参数，根据题目含义赋予意义
 {
     if(x == n) //只要是递归总会有停止条件，这里是dfs到了最后一层
-    {
+    {	
         cout << res << endl; //输出答案
         return;
     }
@@ -886,6 +898,8 @@ void floyd()
 
 ## 最小生成树
 
+<img src="AlgorithmNotes.assets/image-20230506162723138.png" alt="image-20230506162723138" style="zoom:80%;" />
+
 ### Prim
 
 #### 算法思路
@@ -1070,6 +1084,8 @@ int Kruskal()
 
 
 ## 二分图
+
+![image-20230506162907597](AlgorithmNotes.assets/image-20230506162907597.png)
 
 ### 染色法判定二分图
 
