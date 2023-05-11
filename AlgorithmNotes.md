@@ -1514,6 +1514,30 @@ void init()
 
 
 
+### 博弈论
+
+#### Nim游戏
+
+##### 算法思路
+
+如果初始状态为${x_1}\oplus{x_2}\oplus...\oplus{x_n}\neq0$，那么先手一定能操作一次使${x_1}\oplus{x_2}\oplus...\oplus{x_n}=0$，此时后手无论怎么操作后，到先手时先手都可以使${x_1}\oplus{x_2}\oplus...\oplus{x_n}=0$，当x全为0时，后手输了。所以${x_1}\oplus{x_2}\oplus...\oplus{x_n}\neq0$时先手必胜	
+
+反之，如果初始状态为${x_1}\oplus{x_2}\oplus...\oplus{x_n}=0$，那么先手必败
+
+##### 参考代码
+
+```c++
+int x[N];
+bool win()
+{
+    int res = 0;
+    for(int i = 1; i <= n; i++) res ^= x[i];
+    return res; //0则输，否则赢
+}
+```
+
+
+
 ---
 
 ***Made By KyLen***
