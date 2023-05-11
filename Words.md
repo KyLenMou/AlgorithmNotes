@@ -50,6 +50,8 @@ matrix 矩阵
 
 ## N
 
+nuggets 金块
+
 ## O
 
 ## P
