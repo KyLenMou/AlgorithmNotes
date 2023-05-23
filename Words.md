@@ -82,11 +82,17 @@ suffix 后缀
 
 > prefix 前缀
 
+snowflake 雪花
+
 ## T
 
 ## U
 
 ## V
+
+vertex 顶点
+
+> 复数 vertices
 
 ## W
 
