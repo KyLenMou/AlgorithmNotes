@@ -4,6 +4,8 @@
 
 attribute 属性
 
+adverse 不利的
+
 ## B
 
 ## C
@@ -22,6 +24,10 @@ consecutive 连续的
 
 diagonal 对角线
 
+dispensable 可有可无的
+
+detrimental 不利的，有害的
+
 ## E
 
 even 偶数 
@@ -37,6 +43,8 @@ even 偶数
 ## I
 
 intersection 十字路口	
+
+implication 影响
 
 ## J
 
@@ -59,6 +67,8 @@ nuggets 金块
 prefix 前缀
 
 > suffix 后缀
+
+perceive 感知
 
 ## Q
 

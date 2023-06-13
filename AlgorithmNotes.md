@@ -2,6 +2,12 @@
 
 ## 杂项
 
+### cout防止科学计数法格式
+
+```c++
+cout << fixed << setprecision(0) << res << endl; //setprecision的参数决定了最后输出res的小数位有几个，0没有小数位
+```
+
 ### 结构体+自定义排序
 
 ```c++
