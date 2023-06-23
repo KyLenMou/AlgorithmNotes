@@ -20,6 +20,8 @@ concentric 同心的
 
 consecutive 连续的
 
+compatible 兼容的
+
 ## D
 
 diagonal 对角线
